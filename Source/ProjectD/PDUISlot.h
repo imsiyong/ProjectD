@@ -14,8 +14,11 @@ class PROJECTD_API UPDUISlot : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void Refresh();
+	void Refresh(int32 Index);
+	void SetTexture(UTexture2D* texture);
 public:
+	class AProjectDCharacter* Player;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int32 SlotNum;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

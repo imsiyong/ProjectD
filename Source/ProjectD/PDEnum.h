@@ -43,3 +43,13 @@ enum class EWeaponType
 	Sword,
 	Mace
 };
+
+UENUM(BlueprintType)
+enum class ECharacterStatType:uint8
+{
+	None		UMETA(DisplayName = "None"),
+	Atk			UMETA(DisplayName = "Atk"),
+	AtkSpeed	UMETA(DisplayName = "AtkSpeed"),
+	Def			UMETA(DisplayName = "Def"),
+	Hp			UMETA(DisplayName = "Hp")
+};

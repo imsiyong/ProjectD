@@ -16,6 +16,10 @@
 #include "PDUWBattleStatus.h"
 #include "Components/BoxComponent.h"
 #include <Kismet/GameplayStatics.h>
+#include "PDMonsterManager.h"
+#include "PDMonsterAIController.h"
+#include "PDMonsterSample.h"
+#include "PDCharacterItemInventory.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectDCharacter
@@ -33,6 +37,7 @@ AProjectDCharacter::AProjectDCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+	MouseInputValid = true;
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
@@ -76,6 +81,21 @@ AProjectDCharacter::AProjectDCharacter()
 	Tags.Add(FName("Player"));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("PDCharacter"));
 	CharacterWeaponType = EWeaponType::None;
+
+	//test
+	UPDCharacterItemInventory* ref = NewObject<UPDCharacterItemInventory>();
+	ref->Index = 0;
+	ref->Count = 3;
+	ref->Name = FString(TEXT("sword"));
+	ref->Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/Texture_Sword.Texture_Sword")));
+	Inventory.Emplace(ref);
+
+	ref = NewObject<UPDCharacterItemInventory>();
+	ref->Index = 3;
+	ref->Count = 10;
+	ref->Name = FString(TEXT("sword"));
+	ref->Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/Texture_Sword.Texture_Sword")));
+	Inventory.Emplace(ref);
 }
 
 void AProjectDCharacter::BeginPlay()
@@ -114,11 +134,17 @@ void AProjectDCharacter::PostInitializeComponents()
 		UPDGameInstance* PDGameInstance = Cast<UPDGameInstance>(GameInstace);
 		if (PDGameInstance)
 		{
-			PDGameInstance->PlayerStatArrayAdd();
+			if (PDGameInstance->GetPlayerStatArray().Num() == 0)
+			{
+				PDGameInstance->PlayerStatArrayAdd();
+			}
 			Stat = PDGameInstance->GetPlayerStatArray().Top();
 		}
 	}
-	FinalStat = *Stat;
+	if (Stat)
+	{
+		FinalStat = *Stat;
+	}
 
 	UPDInstanceCharacter* AnimInstance = Cast<UPDInstanceCharacter>(GetMesh()->GetAnimInstance());
 	if (AnimInstance)
@@ -140,6 +166,7 @@ void AProjectDCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAction("Attack", IE_Released, this, &AProjectDCharacter::BasicAttackEnd);
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &AProjectDCharacter::StartDash);
 	PlayerInputComponent->BindAction("Dash", IE_Released, this, &AProjectDCharacter::StopDash);
+	PlayerInputComponent->BindAction("ActionKey", IE_Pressed, this, &AProjectDCharacter::SpawnMonsterSample);
 
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AProjectDCharacter::MoveForward);
@@ -148,9 +175,9 @@ void AProjectDCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("Turn", this, &AProjectDCharacter::MyTurnAtRate);
 	PlayerInputComponent->BindAxis("TurnRate", this, &AProjectDCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &AProjectDCharacter::MyLookUpAtRate);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AProjectDCharacter::LookUpAtRate);
 
 	// handle touch devices
@@ -164,7 +191,7 @@ void AProjectDCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 void AProjectDCharacter::BasicAttackStart()
 {
 	auto AnimInstance = Cast<UPDInstanceCharacter>(GetMesh()->GetAnimInstance());
-	if (AnimInstance)
+	if (MouseInputValid && AnimInstance)
 	{
 		AnimInstance->PlayAttackMontage(FinalStat.AtkSpeed);
 	}
@@ -224,6 +251,12 @@ void AProjectDCharacter::DashEnd()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	GetCharacterMovement()->MaxAcceleration = 2048.0f;
+}
+
+void AProjectDCharacter::SpawnMonsterSample()
+{
+	FActorSpawnParameters spawnparam;
+	UPDMonsterManager::Get()->FactoryMonsterSpawn(GetWorld(), FVector(-400.f, 1100.f, 350.f),FRotator(0.f,0.f,0.f), spawnparam);
 }
 
 void AProjectDCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -335,13 +368,27 @@ void AProjectDCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Loc
 void AProjectDCharacter::TurnAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	if (MouseInputValid)
+		AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AProjectDCharacter::MyTurnAtRate(float Rate)
+{
+	if (MouseInputValid)
+		AddControllerYawInput(Rate);
 }
 
 void AProjectDCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	if (MouseInputValid)
+		AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AProjectDCharacter::MyLookUpAtRate(float Rate)
+{
+	if (MouseInputValid)
+		AddControllerPitchInput(Rate);
 }
 
 void AProjectDCharacter::MoveForward(float Value)

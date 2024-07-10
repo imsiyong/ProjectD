@@ -34,8 +34,8 @@ public:
 	class FStat* Stat;
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category="Character Movement:Walking")
 	float SprintSpeedMuti;
+	int32 MonsterCode;
 	
-
 	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	void AttackStart();

@@ -13,4 +13,14 @@ UCLASS()
 class PROJECTD_API UPDItemInventory : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+	void Init();
+
+	virtual void NativeOnInitialized() override;
+
+	void Refresh();
+
+	class AProjectDCharacter* Player;
+
+	TArray<class UPDUISlot*> Slots;
 };

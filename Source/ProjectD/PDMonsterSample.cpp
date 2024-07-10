@@ -11,6 +11,7 @@
 #include "PDMace.h"
 #include "PDSword.h"
 #include "Components/BoxComponent.h"
+#include "PDMonsterManager.h"
 
 // Sets default values
 APDMonsterSample::APDMonsterSample()
@@ -147,14 +148,16 @@ void APDMonsterSample::DeathStart()
 	}
 
 	BasicState = EMonsterBasicState::DEATH;
+
 	//SetActorEnableCollision(false);
 	GetCapsuleComponent()->SetCollisionProfileName("NoCollision");
-	
 	FActorSpawnParameters SpawnParams;
 	FRotator SpawnRotator;
 	FVector SpawnLocation = GetActorLocation();
-	
 	WeaponDrop();
+
+	UPDMonsterManager::Get()->RemoveMonster(MonsterCode);
+
 	//after 5seconds Actor destroy
 	FTimerHandle DeathTimeHandle;
 	GetWorld()->GetTimerManager().SetTimer(DeathTimeHandle, FTimerDelegate::CreateLambda([&]()

@@ -9,6 +9,7 @@
 #include "PDEnum.h"
 #include "ProjectDCharacter.generated.h"
 
+
 UCLASS(config=Game)
 class AProjectDCharacter : public ACharacter
 {
@@ -52,12 +53,14 @@ protected:
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void TurnAtRate(float Rate);
+	void MyTurnAtRate(float Rate);
 
 	/**
 	 * Called via input to turn look up/down at a given rate. 
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
+	void MyLookUpAtRate(float Rate);
 
 	/** Handler for when a touch input begins. */
 	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
@@ -80,8 +83,12 @@ public:
 	void BasicAttackStart();
 	void BasicAttackEnd();
 
+	bool MouseInputValid;
+
 	FStat* Stat;
 	FStat FinalStat;
+
+	TArray<class UPDCharacterItemInventory*> Inventory;
 
 	EWeaponType CharacterWeaponType;
 	class APDPlayerController* PDPlayerController;
@@ -115,6 +122,9 @@ public:
 		void DashEnd();
 
 	UFUNCTION()
+		void SpawnMonsterSample();
+
+	UFUNCTION()
 		void BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
@@ -123,7 +133,5 @@ public:
 	UFUNCTION()
 		void Hit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse,
 			const FHitResult& Hit);
-
-	
 };
 

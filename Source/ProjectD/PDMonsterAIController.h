@@ -16,9 +16,15 @@ class PROJECTD_API APDMonsterAIController : public AAIController
 {
 	GENERATED_BODY()
 public:
+	APDMonsterAIController();
+
+	virtual void PostInitializeComponents() override;
+
 	void BeginPlay();
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
 	void Tick(float DeltaTime);
+
+	void Init();
 
 	APlayerController* MSPlayerController;
 	APawn* PlayerPawn;

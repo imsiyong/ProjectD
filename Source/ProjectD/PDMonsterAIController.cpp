@@ -6,13 +6,20 @@
 #include "PDMonsterSample.h"
 #include "PDMonsterInstance.h"
 
+APDMonsterAIController::APDMonsterAIController()
+{
+}
+
+void APDMonsterAIController::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+}
+
 void APDMonsterAIController::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	MonsterPawn = Cast<APDMonsterSample>(GetPawn());
-	MonsterActionState = EMonsterActionState::SetDest;
-	Destination = FVector(FMath::RandRange(-980.f, 870.f), FMath::RandRange(100.f, 1400.f), 0);
+	Init();
 }
 
 void APDMonsterAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -23,12 +30,19 @@ void APDMonsterAIController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void APDMonsterAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (MonsterPawn->BasicState == EMonsterBasicState::LIVE)
+	if (MonsterPawn && MonsterPawn->BasicState == EMonsterBasicState::LIVE)
 	{
 		FSMState();
 	}
 }
 
+void APDMonsterAIController::Init()
+{
+	PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	MonsterPawn = Cast<APDMonsterSample>(GetPawn());
+	MonsterActionState = EMonsterActionState::SetDest;
+	Destination = FVector(FMath::RandRange(-980.f, 870.f), FMath::RandRange(100.f, 1400.f), 0);
+}
 bool APDMonsterAIController::EqualFloatNearby(float actorDest, float dest)
 {
 	float error=50.0f;

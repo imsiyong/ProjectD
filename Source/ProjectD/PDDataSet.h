@@ -21,6 +21,15 @@ public:
 
 	FStat& operator=(const FStat& ref)
 	{
+		ActorCode = ref.ActorCode;
+		MaxHp = ref.MaxHp;
+		CurHp = ref.CurHp;
+		Atk = ref.Atk;
+		Def = ref.Def;
+		Speed = ref.Speed;
+		AtkRange = ref.AtkRange;
+		AtkSpeed = ref.AtkSpeed;
+		SightRange = ref.SightRange;
 		return *this;
 	}
 
