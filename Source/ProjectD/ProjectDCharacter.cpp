@@ -20,6 +20,7 @@
 #include "PDMonsterAIController.h"
 #include "PDMonsterSample.h"
 #include "PDCharacterItemInventory.h"
+#include "PDItemInventory.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectDCharacter
@@ -83,19 +84,17 @@ AProjectDCharacter::AProjectDCharacter()
 	CharacterWeaponType = EWeaponType::None;
 
 	//test
-	UPDCharacterItemInventory* ref = NewObject<UPDCharacterItemInventory>();
-	ref->Index = 0;
-	ref->Count = 3;
-	ref->Name = FString(TEXT("sword"));
-	ref->Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/Texture_Sword.Texture_Sword")));
-	Inventory.Emplace(ref);
-
-	ref = NewObject<UPDCharacterItemInventory>();
-	ref->Index = 3;
-	ref->Count = 10;
-	ref->Name = FString(TEXT("sword"));
-	ref->Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/Texture_Sword.Texture_Sword")));
-	Inventory.Emplace(ref);
+	Inventory22 = NewObject<UPDCharacterItemInventory>();
+	UTexture2D* texture1 = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/Texture_Sword.Texture_Sword")));
+	if (texture1)
+	{
+		Inventory22->AddItemByIndex(0, FString(TEXT("Sword")), texture1, EInventoryType::Weapon);
+	}
+	UTexture2D* texture2 = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/Texture_Sword.Texture_Sword")));
+	if (texture2)
+	{
+		Inventory22->AddItemByIndex(1, FString(TEXT("Sword")), texture2, EInventoryType::Weapon);
+	}
 }
 
 void AProjectDCharacter::BeginPlay()
@@ -199,6 +198,13 @@ void AProjectDCharacter::BasicAttackStart()
 
 void AProjectDCharacter::BasicAttackEnd()
 {
+}
+
+bool AProjectDCharacter::SwapInventory(int32 index1, int32 index2)
+{
+	Inventory22->SwapItemByIndex(index1, index2);
+	PDPlayerController->ItemInventory->Refresh();
+	return true;
 }
 
 float AProjectDCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

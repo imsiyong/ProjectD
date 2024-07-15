@@ -53,3 +53,17 @@ enum class ECharacterStatType:uint8
 	Def			UMETA(DisplayName = "Def"),
 	Hp			UMETA(DisplayName = "Hp")
 };
+
+UENUM(BlueprintType)
+enum class ESlotType :uint8
+{
+	None		UMETA(DisplayName ="None"),
+	Inventory	UMETA(DisplayName="Weapon")
+};
+
+UENUM(BlueprintType)
+enum class EInventoryType : uint8
+{
+	None		UMETA(DisplayName = "None"),
+	Weapon		UMETA(DisplayName = "Weapon")
+};

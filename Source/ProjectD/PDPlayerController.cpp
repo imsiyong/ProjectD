@@ -7,6 +7,7 @@
 #include "PDMonsterSample.h"
 #include "PDUWBattleEnd.h"
 #include "ProjectDCharacter.h"
+#include "PDUISlot.h"
 
 APDPlayerController::APDPlayerController()
 {

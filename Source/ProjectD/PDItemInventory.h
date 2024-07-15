@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "PDEnum.h"
 #include "PDItemInventory.generated.h"
 
 /**

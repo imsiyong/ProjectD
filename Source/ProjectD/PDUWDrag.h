@@ -14,5 +14,6 @@ class PROJECTD_API UPDUWDrag : public UDragDropOperation
 {
 	GENERATED_BODY()
 public:
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		int32 index;
 };

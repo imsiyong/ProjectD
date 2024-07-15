@@ -88,7 +88,8 @@ public:
 	FStat* Stat;
 	FStat FinalStat;
 
-	TArray<class UPDCharacterItemInventory*> Inventory;
+	class UPDCharacterItemInventory* Inventory22;
+	bool SwapInventory(int32 index1, int32 index2);
 
 	EWeaponType CharacterWeaponType;
 	class APDPlayerController* PDPlayerController;

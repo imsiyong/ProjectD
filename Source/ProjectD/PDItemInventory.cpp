@@ -13,6 +13,8 @@
 
 void UPDItemInventory::Init()
 {
+	Slots.Empty();
+
 	TArray<UWidget*> Widgets;
 	WidgetTree->GetAllWidgets(Widgets);
 
@@ -21,9 +23,9 @@ void UPDItemInventory::Init()
 	{
 		UISlot = Cast<UPDUISlot>(Widget);
 		if (!UISlot)continue;
+		UISlot->SlotType = ESlotType::None;
 		Slots.Emplace(UISlot);
 	}
-	
 }
 
 void UPDItemInventory::NativeOnInitialized()
@@ -42,10 +44,8 @@ void UPDItemInventory::Refresh()
 			Player = Cast<AProjectDCharacter>(PlayerController->GetPawn());
 		}
 	}
-	UPDCharacterItemInventory* ref;
-	for (int i = 0; i < Player->Inventory.Num(); i++)
+	for (int i = 0; i < Player->Inventory22->MaxCount; i++)
 	{
-		ref = Player->Inventory[i];
-		Slots[ref->Index]->Refresh(i);
+		Slots[i]->Refresh();
 	}
 }
