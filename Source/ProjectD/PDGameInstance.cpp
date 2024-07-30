@@ -2,11 +2,18 @@
 
 
 #include "PDGameInstance.h"
+#include "ItemData.h"
 
 UPDGameInstance::UPDGameInstance()
 {
 	PlayerCode = 0;
 	MonsterCode = 0;
+	static ConstructorHelpers::FObjectFinder<UDataTable> IT(TEXT("DataTable'/Game/CsvData/ItemData.ItemData'"));
+	if (IT.Succeeded())
+	{
+		ItemData = IT.Object;
+	}
+	
 }
 
 void UPDGameInstance::PlayerStatArrayAdd()

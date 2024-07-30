@@ -21,9 +21,11 @@ public:
 	{
 		Index = ref.Index;
 		Count = ref.Count;
+		ItemCode = ref.ItemCode;
 		Name = ref.Name;
 		Texture = ref.Texture;
 		InventoryType = ref.InventoryType;
+		EquipType = ref.EquipType;
 		return *this;
 	}
 
@@ -34,10 +36,16 @@ public:
 		int32 Count;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 ItemCode;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FString Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UTexture2D* Texture;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		EEquipType EquipType;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SlotType")
 		TEnumAsByte<EInventoryType> InventoryType;
@@ -60,21 +68,14 @@ public:
 		TArray<FItemInventory> Inventory;
 public:
 	UFUNCTION()
-		void AddItemByIndex(int32 index,FString name, UTexture2D* texture, EInventoryType type);
+		void AddItem(FString name, int32 itemCode, UTexture2D* texture, EInventoryType type, EEquipType equiptype);
+	UFUNCTION()
+		void AddItemByIndex(int32 index,FString name, int32 itemCode, UTexture2D* texture, EInventoryType type, EEquipType equiptype);
 	UFUNCTION()
 		void RemoveItemByIndex(int32 index);
 	UFUNCTION()
 		void SwapItemByIndex(int32 indexA, int32 indexB);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 Index;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 Count;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FString Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UTexture2D* Texture;
+		UTexture2D* DefaultTexture;
 };

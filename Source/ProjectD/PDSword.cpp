@@ -5,6 +5,11 @@
 #include "Components/BoxComponent.h"
 #include "ProjectDCharacter.h"
 #include "PDDataSet.h"
+#include "PDPlayerController.h"
+#include "ProjectDCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "PDCharacterItemInventory.h"
+#include "PDItemInventory.h"
 
 APDSword::APDSword()
 {
@@ -19,6 +24,9 @@ APDSword::APDSword()
 	ItemStat->Atk = -200.0f;
 	ItemStat->AtkRange = 0.0f;
 	ItemStat->AtkSpeed = 1.0f;
+	
+	ItemCode = 1;
+	Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/Texture_Sword.Texture_Sword")));
 }
 
 void APDSword::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -26,7 +34,26 @@ void APDSword::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	if (OtherActor->ActorHasTag(FName("Player")) && ItemBasicState == EItemBasicState::Drop)
 	{
 		AProjectDCharacter* PDCharacter = Cast<AProjectDCharacter>(OtherActor);
-		PDCharacter->WeaponMount(EWeaponType::Sword);
+		//PDCharacter->WeaponMount(EWeaponType::Sword);
+		PDCharacter->Inventory22->AddItem(FString(TEXT("Sword")), 1, Texture, EInventoryType::Weapon, EEquipType::Right);
+		PDCharacter->PDPlayerController->ItemInventory->Refresh();
 		Destroy();
+	}
+}
+
+void APDSword::EquipmentMount()
+{
+	if (Player == nullptr)
+	{
+		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (PlayerController)
+		{
+			Player = Cast<AProjectDCharacter>(PlayerController->GetPawn());
+		}
+	}
+	FName WeaponSocket(TEXT("hand_r_socket"));
+	if (Player->GetMesh()->DoesSocketExist(WeaponSocket))
+	{
+		AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
 	}
 }

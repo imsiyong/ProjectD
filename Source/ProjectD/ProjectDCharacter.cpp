@@ -21,6 +21,10 @@
 #include "PDMonsterSample.h"
 #include "PDCharacterItemInventory.h"
 #include "PDItemInventory.h"
+#include "PDCharacterEquip.h"
+#include "PDUWEquip.h"
+#include "ItemData.h"
+#include "PDGameInstance.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectDCharacter
@@ -82,18 +86,22 @@ AProjectDCharacter::AProjectDCharacter()
 	Tags.Add(FName("Player"));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("PDCharacter"));
 	CharacterWeaponType = EWeaponType::None;
+	
+
+	//equip set
+	Equip = NewObject<UPDCharacterEquip>();
+	ItemArray.Empty();
+	for (int i = 0; i < 5; i++)
+	{
+		ItemArray.Emplace(nullptr);
+	}
 
 	//test
 	Inventory22 = NewObject<UPDCharacterItemInventory>();
-	UTexture2D* texture1 = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/Texture_Sword.Texture_Sword")));
-	if (texture1)
-	{
-		Inventory22->AddItemByIndex(0, FString(TEXT("Sword")), texture1, EInventoryType::Weapon);
-	}
-	UTexture2D* texture2 = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/Texture_Sword.Texture_Sword")));
+	UTexture2D* texture2 = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/Texture_Mace.Texture_Mace")));
 	if (texture2)
 	{
-		Inventory22->AddItemByIndex(1, FString(TEXT("Sword")), texture2, EInventoryType::Weapon);
+		Inventory22->AddItemByIndex(1, FString(TEXT("Mace")),2, texture2, EInventoryType::Weapon, EEquipType::Right);
 	}
 }
 
@@ -130,7 +138,7 @@ void AProjectDCharacter::PostInitializeComponents()
 	//stat initialize
 	if (UGameInstance* GameInstace = GetGameInstance())
 	{
-		UPDGameInstance* PDGameInstance = Cast<UPDGameInstance>(GameInstace);
+		PDGameInstance = Cast<UPDGameInstance>(GameInstace);
 		if (PDGameInstance)
 		{
 			if (PDGameInstance->GetPlayerStatArray().Num() == 0)
@@ -205,6 +213,37 @@ bool AProjectDCharacter::SwapInventory(int32 index1, int32 index2)
 	Inventory22->SwapItemByIndex(index1, index2);
 	PDPlayerController->ItemInventory->Refresh();
 	return true;
+}
+
+bool AProjectDCharacter::EquipItem(int32 index1)
+{
+	if (!Inventory22->Inventory.IsValidIndex(index1) || Inventory22->Inventory[index1].InventoryType == EInventoryType::None)
+		return false;
+	FItemInventory ref = Inventory22->Inventory[index1];
+	if (Equip->Equipments[static_cast<int32>(ref.EquipType)].Has)
+	{
+		UnEquipItem(ref.EquipType);
+		//return false;
+	}
+		
+	
+	Equip->AddEquipByType(ref.Name, ref.ItemCode, ref.Texture, ref.EquipType);
+	Inventory22->RemoveItemByIndex(index1);
+	PDPlayerController->ItemInventory->Refresh();
+	PDPlayerController->Equip->Refresh();
+	return true;
+}
+
+bool AProjectDCharacter::UnEquipItem(EEquipType equipType)
+{
+	if (!Equip->Equipments[static_cast<int32>(equipType)].Has)
+		return false;
+	FEquip ref = Equip->Equipments[static_cast<int32>(equipType)];
+	Inventory22->AddItem(ref.Name,ref.ItemCode, ref.Texture, EInventoryType::Weapon, ref.EquipType);
+	Equip->RemoveEquipByType(equipType);
+	PDPlayerController->ItemInventory->Refresh();
+	PDPlayerController->Equip->Refresh();
+	return false;
 }
 
 float AProjectDCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -282,7 +321,6 @@ void AProjectDCharacter::WeaponMount(EWeaponType WT)
 {
 	if (CharacterWeaponType != EWeaponType::None)
 	{
-		
 		if (ItemInfo)
 		{
 			ItemInfo->ItemBasicState = EItemBasicState::None;
@@ -322,11 +360,102 @@ void AProjectDCharacter::WeaponMount(EWeaponType WT)
 
 	if (ItemInfo)
 	{
-		FName WeaponSocket(TEXT("hand_r_socket"));
+		/*APDSword* ref = Cast<APDSword>(ItemInfo);
+		ref->EquipmentMount();*/
+
+		/*FName WeaponSocket(TEXT("hand_r_socket"));
 		if (GetMesh()->DoesSocketExist(WeaponSocket))
 		{
 			ItemInfo->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+		}*/
+	}
+}
+
+void AProjectDCharacter::WeaponMountByEquipment()
+{
+	//장비창 5 부위 온오프 따라 진행. for문 이용
+	for (int i = 0; i < 5; i++)
+	{
+		//아이템 코드를 통해서 csv파일 로드해오기
+		//이후 장착에 필요한 정보들 다 가져오기
+		if (Equip->Equipments[i].Has)
+		{
+			int32 TempItemCode = Equip->Equipments[i].ItemCode;
+			FItemData* rowData = PDGameInstance->ItemData->FindRow<FItemData>(*FString::FromInt(TempItemCode), TEXT(""));
+			if (ItemArray[i] != nullptr)
+			{
+				//장비창의 아이템과 캐릭터가 소유중인 아이템이 같은지 판별
+				//아이템 코드 통해서 같은지 판단
+				//같지 않으면 ItemArray[i]를 삭제 후 새로운 아이템 장착
+				if (TempItemCode != ItemArray[i]->ItemCode)
+				{
+					ItemArray[i]->ItemBasicState = EItemBasicState::None;
+					FinalStat.Atk -= ItemArray[i]->ItemStat->Atk;
+					FinalStat.AtkRange -= ItemArray[i]->ItemStat->AtkRange;
+					FinalStat.AtkSpeed -= ItemArray[i]->ItemStat->AtkSpeed;
+					ItemArray[i]->Destroy();
+					ItemArray[i] = nullptr;
+					EquipmentMountByItemCode(TempItemCode, i);
+				}
+			}
+			else
+			{
+				EquipmentMountByItemCode(TempItemCode, i);
+				//아이템 장착
+			}
 		}
+		else
+		{
+			if (ItemArray[i] != nullptr)
+			{
+				//장착 중인 아이템 삭제
+				ItemArray[i]->ItemBasicState = EItemBasicState::None;
+				FinalStat.Atk -= ItemArray[i]->ItemStat->Atk;
+				FinalStat.AtkRange -= ItemArray[i]->ItemStat->AtkRange;
+				FinalStat.AtkSpeed -= ItemArray[i]->ItemStat->AtkSpeed;
+				ItemArray[i]->Destroy();
+				ItemArray[i] = nullptr;
+			}
+		}
+	}
+}
+
+void AProjectDCharacter::EquipmentMountByItemCode(int32 itemCode, int32 EquipNum)
+{
+	switch (itemCode)
+	{
+	case 1:
+		ItemArray[EquipNum] = GetWorld()->SpawnActor <APDSword>();
+		ItemArray[EquipNum]->ItemBasicState = EItemBasicState::Obtain;
+		ItemArray[EquipNum]->ItemBox->SetCollisionProfileName("NoCollision");
+		ItemArray[EquipNum]->ItemBasicState = EItemBasicState::Mount;
+		FinalStat.Atk += ItemArray[EquipNum]->ItemStat->Atk;
+		FinalStat.AtkRange += ItemArray[EquipNum]->ItemStat->AtkRange;
+		FinalStat.AtkSpeed += ItemArray[EquipNum]->ItemStat->AtkSpeed;
+		CharacterWeaponType = EWeaponType::Sword;
+		if (ItemArray[EquipNum])
+		{
+			APDSword* ref = Cast<APDSword>(ItemArray[EquipNum]);
+			ref->EquipmentMount();
+		}
+		break;
+	case 2:
+		ItemArray[EquipNum] = GetWorld()->SpawnActor <APDMace>();
+		ItemArray[EquipNum]->ItemBasicState = EItemBasicState::Obtain;
+		ItemArray[EquipNum]->ItemBox->SetCollisionProfileName("NoCollision");
+		ItemArray[EquipNum]->ItemBasicState = EItemBasicState::Mount;
+		FinalStat.Atk += ItemArray[EquipNum]->ItemStat->Atk;
+		FinalStat.AtkRange += ItemArray[EquipNum]->ItemStat->AtkRange;
+		FinalStat.AtkSpeed += ItemArray[EquipNum]->ItemStat->AtkSpeed;
+		CharacterWeaponType = EWeaponType::Mace;
+		if (ItemArray[EquipNum])
+		{
+			APDMace* ref = Cast<APDMace>(ItemArray[EquipNum]);
+			ref->EquipmentMount();
+		}
+		break;
+	default:
+		break;
 	}
 }
 

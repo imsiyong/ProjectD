@@ -27,6 +27,7 @@ APDItem::APDItem()
 	ItemBasicState = EItemBasicState::Drop;
 
 	ItemStat = new FItemStat(10.f, 10.f);
+	ItemCode = -1;//상속시 다 변경
 }
 
 // Called when the game starts or when spawned
@@ -69,5 +70,9 @@ void APDItem::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Other
 }
 
 void APDItem::Hit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+}
+
+void APDItem::EquipmentMount()
 {
 }

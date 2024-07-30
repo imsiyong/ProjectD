@@ -91,11 +91,18 @@ public:
 	class UPDCharacterItemInventory* Inventory22;
 	bool SwapInventory(int32 index1, int32 index2);
 
+	class UPDCharacterEquip* Equip;
+	bool EquipItem(int32 index1);
+	bool UnEquipItem(EEquipType equipType);
+
 	EWeaponType CharacterWeaponType;
 	class APDPlayerController* PDPlayerController;
+	class UPDGameInstance* PDGameInstance;
 
 	UPROPERTY(VisibleAnywhere)
 		class APDItem* ItemInfo;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		TArray<class APDItem*> ItemArray;
 	
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* Weapon;
@@ -104,6 +111,8 @@ public:
 
 	void AttackCheck();
 	void WeaponMount(EWeaponType WT);
+	void WeaponMountByEquipment();
+	void EquipmentMountByItemCode(int32 itemCode, int32 EquipNum);
 	void ChangeCurHp(float curHp);
 
 	FOnTimelineFloat DashTimeLineUpdateDelegate;

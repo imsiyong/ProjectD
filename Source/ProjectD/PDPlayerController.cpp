@@ -8,9 +8,12 @@
 #include "PDUWBattleEnd.h"
 #include "ProjectDCharacter.h"
 #include "PDUISlot.h"
+#include "PDUWEquip.h"
 
 APDPlayerController::APDPlayerController()
 {
+	bShowMouseCursor = true;
+	ToggleCount = 0;
 	ConstructorHelpers::FClassFinder<UPDUWBattleStatus> BS(TEXT("WidgetBlueprint'/Game/UMG/BattleStatus.BattleStatus_C'"));
 	if (BS.Succeeded())
 	{
@@ -23,15 +26,18 @@ APDPlayerController::APDPlayerController()
 		PDItemInventory = II.Class;
 	}
 	InventoryVisible = false;
-
 	ConstructorHelpers::FClassFinder<UPDUWBattleEnd> BE(TEXT("WidgetBlueprint'/Game/UMG/UEndBattle.UEndBattle_C'"));
 	if (BE.Succeeded())
 	{
 		PDUWBattleEnd = BE.Class;
-		
 	}
 	BattleEndVisible = false;
-
+	ConstructorHelpers::FClassFinder<UPDUWEquip> EQ(TEXT("WidgetBlueprint'/Game/UMG/UEquip.UEquip_C'"));
+	if (EQ.Succeeded())
+	{
+		PDUWEquip = EQ.Class;
+	}
+	EquipVisible = false;
 }
 
 void APDPlayerController::BeginPlay()
@@ -52,23 +58,18 @@ void APDPlayerController::SetupInputComponent()
 	if (PDItemInventory != nullptr)
 	{
 		ItemInventory = CreateWidget<UPDItemInventory>(this, PDItemInventory);
-		if (ItemInventory != nullptr)
-		{
-			ItemInventory->AddToViewport();
-			ItemInventory->SetVisibility(ESlateVisibility::Hidden);
-		}
 	}
 	if (PDUWBattleEnd != nullptr)
 	{
 		BattleEnd = CreateWidget<UPDUWBattleEnd>(this, PDUWBattleEnd);
-		if (BattleEnd != nullptr)
-		{
-			BattleEnd->AddToViewport();
-			BattleEnd->SetVisibility(ESlateVisibility::Hidden);
-		}
+	}
+	if (PDUWEquip != nullptr)
+	{
+		Equip = CreateWidget<UPDUWEquip>(this, PDUWEquip);
 	}
 	InputComponent->BindAction("BattleEnd", IE_Pressed, this, &APDPlayerController::ToggleBattleEnd);
 	InputComponent->BindAction("Inventory", IE_Pressed, this, &APDPlayerController::ToggleInventory);
+	InputComponent->BindAction("Equip", IE_Pressed, this, &APDPlayerController::ToggleEquip);
 }
 
 void APDPlayerController::CheckMonsterDeath()
@@ -83,35 +84,83 @@ void APDPlayerController::ToggleBattleEnd()
 		BattleEndVisible = !BattleEndVisible;
 		if (BattleEndVisible)
 		{
-			bShowMouseCursor = true;
-			BattleEnd->SetVisibility(ESlateVisibility::Visible);
+			ToggleMousePointer(true);
+			BattleEnd->AddToViewport();
 		}
 		else
 		{
-			bShowMouseCursor = false;
-			BattleEnd->SetVisibility(ESlateVisibility::Hidden);
+			ToggleMousePointer(false);
+			BattleEnd->RemoveFromViewport();
 		}
 	}
-	ItemInventory->Refresh();
 }
 
 void APDPlayerController::ToggleInventory()
 {
 	if (ItemInventory)
 	{
+		ItemInventory->Refresh();
 		AProjectDCharacter* PDC = Cast<AProjectDCharacter>(GetPawn());
 		InventoryVisible = !InventoryVisible;
 		if (InventoryVisible)
 		{
-			bShowMouseCursor = true;
+			ToggleMousePointer(true);
 			PDC->MouseInputValid = false;
-			ItemInventory->SetVisibility(ESlateVisibility::Visible);
+			ItemInventory->AddToViewport();
 		}
 		else
 		{
-			bShowMouseCursor = false;
+			ToggleMousePointer(false);
 			PDC->MouseInputValid = true;
-			ItemInventory->SetVisibility(ESlateVisibility::Hidden);
+			ItemInventory->RemoveFromViewport();
 		}
+	}
+}
+
+void APDPlayerController::ToggleEquip()
+{
+	if (Equip)
+	{
+		Equip->Refresh();
+		AProjectDCharacter* PDC = Cast<AProjectDCharacter>(GetPawn());
+		EquipVisible = !EquipVisible;
+		if (EquipVisible)
+		{
+			ToggleMousePointer(true);
+			PDC->MouseInputValid = false;
+			Equip->AddToViewport();
+		}
+		else
+		{
+			ToggleMousePointer(false);
+			PDC->MouseInputValid = true;
+			Equip->RemoveFromViewport();
+		}
+	}
+}
+
+void APDPlayerController::ToggleMousePointer(bool isEnable)
+{
+	if (isEnable)
+	{
+		ToggleCount++;
+	}
+	else
+	{
+		ToggleCount--;
+	}
+	if (ToggleCount <= 0)
+	{
+		if(bShowMouseCursor)
+			bShowMouseCursor = false;
+	}
+	else
+	{
+		if(!bShowMouseCursor)
+			bShowMouseCursor = true;
+	}
+	if (ToggleCount < 0)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Toggle Count error : minus"));
 	}
 }

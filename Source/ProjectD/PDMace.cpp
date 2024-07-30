@@ -5,6 +5,11 @@
 #include "Components/BoxComponent.h"
 #include "ProjectDCharacter.h"
 #include "PDDataSet.h"
+#include "PDPlayerController.h"
+#include "ProjectDCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "PDCharacterItemInventory.h"
+#include "PDItemInventory.h"
 
 APDMace::APDMace()
 {
@@ -18,6 +23,8 @@ APDMace::APDMace()
 	ItemStat->AtkRange = 0.0f;
 	ItemStat->AtkSpeed = -1.0f;
 
+	ItemCode = 2;
+	Texture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/Texture_Mace.Texture_Mace")));
 }
 
 void APDMace::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -25,7 +32,27 @@ void APDMace::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	if (OtherActor->ActorHasTag(FName("Player")) && ItemBasicState == EItemBasicState::Drop)
 	{
 		AProjectDCharacter* PDCharacter = Cast<AProjectDCharacter>(OtherActor);
-		PDCharacter->WeaponMount(EWeaponType::Mace);
+		//PDCharacter->WeaponMount(EWeaponType::Mace);
+		PDCharacter->Inventory22->AddItem(FString(TEXT("Mace")), 1, Texture, EInventoryType::Weapon, EEquipType::Right);
+		PDCharacter->PDPlayerController->ItemInventory->Refresh();
 		Destroy();
+	}
+}
+
+void APDMace::EquipmentMount()
+{
+	if (Player == nullptr)
+	{
+		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (PlayerController)
+		{
+			Player = Cast<AProjectDCharacter>(PlayerController->GetPawn());
+		}
+	}
+	FName WeaponSocket(TEXT("hand_r_socket"));
+	if (Player->GetMesh()->DoesSocketExist(WeaponSocket))
+	{
+		AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocket);
+		SetActorRelativeRotation(FRotator(0.f, 0.f, 180.f));
 	}
 }

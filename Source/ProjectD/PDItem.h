@@ -42,4 +42,15 @@ public:
 			const FHitResult& Hit);
 
 	class FItemStat* ItemStat;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		int32 ItemCode;
+
+	UFUNCTION()
+		virtual void EquipmentMount();
+
+	UPROPERTY(VisibleAnywhere)
+		class AProjectDCharacter* Player;
+
+	UTexture2D* Texture;
 };

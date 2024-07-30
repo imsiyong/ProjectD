@@ -31,6 +31,10 @@ public:
 		TSubclassOf<class UPDUWBattleEnd> PDUWBattleEnd;
 	class UPDUWBattleEnd* BattleEnd;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+		TSubclassOf<class UPDUWEquip> PDUWEquip;
+	class UPDUWEquip* Equip;
+
 	UFUNCTION()
 		void CheckMonsterDeath();
 
@@ -41,4 +45,12 @@ public:
 	bool InventoryVisible;
 	UFUNCTION()
 		void ToggleInventory();
+
+	bool EquipVisible;
+	UFUNCTION()
+		void ToggleEquip();
+
+	int32 ToggleCount;
+	UFUNCTION()
+		void ToggleMousePointer(bool isEnable);
 };

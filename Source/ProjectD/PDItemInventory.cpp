@@ -23,7 +23,7 @@ void UPDItemInventory::Init()
 	{
 		UISlot = Cast<UPDUISlot>(Widget);
 		if (!UISlot)continue;
-		UISlot->SlotType = ESlotType::None;
+		UISlot->SlotType = ESlotType::Inventory;
 		Slots.Emplace(UISlot);
 	}
 }

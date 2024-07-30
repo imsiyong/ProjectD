@@ -5,6 +5,7 @@
 
 UPDCharacterItemInventory::UPDCharacterItemInventory()
 {
+	DefaultTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/emptytexture.emptytexture")));
 	MaxCount = 12;
 	Inventory.Empty();
 	for (int i = 0; i < MaxCount; i++)
@@ -14,12 +15,30 @@ UPDCharacterItemInventory::UPDCharacterItemInventory()
 }
 
 
-void UPDCharacterItemInventory::AddItemByIndex(int32 index, FString name, UTexture2D* texture, EInventoryType type)
+void UPDCharacterItemInventory::AddItem(FString name, int32 itemCode, UTexture2D* texture, EInventoryType type, EEquipType equiptype)
+{
+	int32 index = 0;
+	while (1)
+	{
+		if (index >= MaxCount)return;
+		if (Inventory[index].InventoryType.GetValue() == EInventoryType::None)break;
+		index++;
+	}
+	Inventory[index].Name = name;
+	Inventory[index].ItemCode = itemCode;
+	Inventory[index].Texture = texture;
+	Inventory[index].InventoryType = type;
+	Inventory[index].EquipType = equiptype;
+}
+
+void UPDCharacterItemInventory::AddItemByIndex(int32 index, FString name, int32 itemCode, UTexture2D* texture, EInventoryType type, EEquipType equiptype)
 {
 	if (index<0 || index >MaxCount)return;
 	Inventory[index].Name = name;
+	Inventory[index].ItemCode = itemCode;
 	Inventory[index].Texture = texture;
 	Inventory[index].InventoryType = type;
+	Inventory[index].EquipType = equiptype;
 }
 
 void UPDCharacterItemInventory::RemoveItemByIndex(int32 index)
@@ -28,7 +47,8 @@ void UPDCharacterItemInventory::RemoveItemByIndex(int32 index)
 	if (Inventory[index].InventoryType != EInventoryType::None)
 	{
 		Inventory[index].Name = FString(TEXT(""));
-		Inventory[index].Texture = nullptr;
+		Inventory[index].ItemCode = -1;
+		Inventory[index].Texture = DefaultTexture;
 		Inventory[index].InventoryType = EInventoryType::None;
 	}
 }
@@ -45,16 +65,20 @@ FItemInventory::FItemInventory()
 {
 	Index = 0;
 	Count = 0;
+	ItemCode = -1;
 	InventoryType = EInventoryType::None;
 	UTexture2D* refTexture= Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/emptytexture.emptytexture")));
 	Texture = refTexture;
+	EquipType = EEquipType::None;
 }
 
 FItemInventory::FItemInventory(int32 index)
 {
 	Index = index;
 	Count = 0;
+	ItemCode = -1;
 	InventoryType = EInventoryType::None;
 	UTexture2D* refTexture = Cast<UTexture2D>(StaticLoadObject(UTexture2D::StaticClass(), nullptr, TEXT("/Game/DownloadAsset/MyTexture/emptytexture.emptytexture")));
 	Texture = refTexture;
+	EquipType = EEquipType::None;
 }
