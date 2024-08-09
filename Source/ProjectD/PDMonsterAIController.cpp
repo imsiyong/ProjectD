@@ -5,6 +5,8 @@
 #include <Kismet/GameplayStatics.h>
 #include "PDMonsterSample.h"
 #include "PDMonsterInstance.h"
+#include "Monster/PDMonster1.h"
+#include "Monster/PDMonster1Instance.h"
 
 APDMonsterAIController::APDMonsterAIController()
 {

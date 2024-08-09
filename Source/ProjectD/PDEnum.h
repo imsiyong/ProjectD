@@ -29,6 +29,17 @@ enum class EMonsterActionState
 	MoveToCenter
 };
 
+enum class ENormalMonsterActionState
+{
+	None,
+	Move,
+	Find,
+	Attack,
+	Spawn,
+	Patrol,
+	Tracking
+};
+
 enum class EItemBasicState
 {
 	None,
@@ -78,4 +89,12 @@ enum class EEquipType : uint8
 	Left		UMETA(DisplayName = "Left"),
 	Right		UMETA(DisplayName = "Right"),
 	None		UMETA(DisplayName = "None")
+};
+
+UENUM(BlueprintType)
+enum class EMonsterGrade : uint8
+{
+	None,
+	Normal,
+	Boss
 };

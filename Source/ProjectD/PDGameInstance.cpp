@@ -3,6 +3,8 @@
 
 #include "PDGameInstance.h"
 #include "ItemData.h"
+#include "Manager/PDSpawnManager.h"
+#include "PDSpawnPoint.h"
 
 UPDGameInstance::UPDGameInstance()
 {
@@ -13,7 +15,6 @@ UPDGameInstance::UPDGameInstance()
 	{
 		ItemData = IT.Object;
 	}
-	
 }
 
 void UPDGameInstance::PlayerStatArrayAdd()

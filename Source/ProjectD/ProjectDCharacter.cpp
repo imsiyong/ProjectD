@@ -25,6 +25,9 @@
 #include "PDUWEquip.h"
 #include "ItemData.h"
 #include "PDGameInstance.h"
+#include "Manager/PDNormalMonsterManager.h"
+#include "Monster/PDMonster1.h"
+#include "Manager/PDSpawnManager.h"
 
 //////////////////////////////////////////////////////////////////////////
 // AProjectDCharacter
@@ -301,8 +304,10 @@ void AProjectDCharacter::DashEnd()
 void AProjectDCharacter::SpawnMonsterSample()
 {
 	FActorSpawnParameters spawnparam;
-	UPDMonsterManager::Get()->FactoryMonsterSpawn(GetWorld(), FVector(-400.f, 1100.f, 350.f),FRotator(0.f,0.f,0.f), spawnparam);
+	//UPDMonsterManager::Get()->FactoryMonsterSpawn(GetWorld(), FVector(-400.f, 1100.f, 350.f),FRotator(0.f,0.f,0.f), spawnparam);
+	//UPDNormalMonsterManager::Get()->FactoryMonsterSpawn(GetWorld(), FVector(-400.f, 1100.f, 250.f), FRotator(0.f, 0.f, 0.f), spawnparam);
 }
+
 
 void AProjectDCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
