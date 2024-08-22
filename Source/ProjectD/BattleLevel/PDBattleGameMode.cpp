@@ -4,11 +4,13 @@
 #include "PDBattleGameMode.h"
 #include "../ProjectDCharacter.h"
 #include "../Manager/PDSpawnManager.h"
+#include "../Character/PDManCharacter.h"
 #include "PDBattlePlayerController.h"
 
 APDBattleGameMode::APDBattleGameMode()
 {
-	DefaultPawnClass = AProjectDCharacter::StaticClass();
+	PrimaryActorTick.bCanEverTick = true;
+	DefaultPawnClass = APDManCharacter::StaticClass();
 	PlayerControllerClass = APDBattlePlayerController::StaticClass();
 	APDSpawnManager::Get()->LoadSpawnData();
 }
@@ -24,4 +26,10 @@ void APDBattleGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 	APDSpawnManager::Delete();
+}
+
+void APDBattleGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	APDSpawnManager::Get()->SpawnTick(DeltaSeconds, GetWorld());
 }

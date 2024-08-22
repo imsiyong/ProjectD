@@ -13,16 +13,16 @@
 #include "PDSword.h"
 #include "PDMace.h"
 #include "PDPlayerController.h"
-#include "PDUWBattleStatus.h"
+#include "UserWidget/PDUWBattleStatus.h"
 #include "Components/BoxComponent.h"
 #include <Kismet/GameplayStatics.h>
 #include "PDMonsterManager.h"
 #include "PDMonsterAIController.h"
 #include "PDMonsterSample.h"
 #include "PDCharacterItemInventory.h"
-#include "PDItemInventory.h"
+#include "UserWidget/PDItemInventory.h"
 #include "PDCharacterEquip.h"
-#include "PDUWEquip.h"
+#include "UserWidget/PDUWEquip.h"
 #include "ItemData.h"
 #include "PDGameInstance.h"
 #include "Manager/PDNormalMonsterManager.h"
@@ -89,7 +89,6 @@ AProjectDCharacter::AProjectDCharacter()
 	Tags.Add(FName("Player"));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("PDCharacter"));
 	CharacterWeaponType = EWeaponType::None;
-	
 
 	//equip set
 	Equip = NewObject<UPDCharacterEquip>();
@@ -304,14 +303,13 @@ void AProjectDCharacter::DashEnd()
 void AProjectDCharacter::SpawnMonsterSample()
 {
 	FActorSpawnParameters spawnparam;
-	//UPDMonsterManager::Get()->FactoryMonsterSpawn(GetWorld(), FVector(-400.f, 1100.f, 350.f),FRotator(0.f,0.f,0.f), spawnparam);
+	UPDMonsterManager::Get()->FactoryMonsterSpawn(GetWorld(), FVector(-400.f, 1100.f, 350.f),FRotator(0.f,0.f,0.f), spawnparam);
 	//UPDNormalMonsterManager::Get()->FactoryMonsterSpawn(GetWorld(), FVector(-400.f, 1100.f, 250.f), FRotator(0.f, 0.f, 0.f), spawnparam);
 }
 
 
 void AProjectDCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
 }
 
 void AProjectDCharacter::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

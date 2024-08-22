@@ -40,4 +40,6 @@ public:
 	void Patrol();
 	void Tracking();
 	void Attack();
+
+	int32 DestIndex;
 };

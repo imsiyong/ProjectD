@@ -25,6 +25,7 @@ void APDMonster1AIController::Init()
 		MonsterPawn = Cast<APDMonster1>(GetPawn());
 	}
 	MonsterActionState = ENormalMonsterActionState::Spawn;
+	DestIndex = 0;
 }
 
 void APDMonster1AIController::SetPoint(FVector spawnPoint, TArray<FVector> destination)
@@ -105,6 +106,7 @@ void APDMonster1AIController::FSMState()
 
 void APDMonster1AIController::ActorSpawn()
 {
+	UE_LOG(LogTemp, Log, TEXT("ActorSpawn~"));
 	MoveToLocation(SpawnPoint);
 	if (EqualActorXYNearby(MonsterPawn, SpawnPoint))
 	{
@@ -115,23 +117,25 @@ void APDMonster1AIController::ActorSpawn()
 
 void APDMonster1AIController::Patrol()
 {
+	UE_LOG(LogTemp, Log, TEXT("Patrol~: Num : %d"), Destination.Num());
 	float Distance = FVector::Dist(MonsterPawn->GetActorLocation(), PlayerPawn->GetActorLocation());
-	static int32 index = 0;
 	if (Distance < MonsterPawn->Stat->SightRange)
 	{
 		MonsterActionState = ENormalMonsterActionState::Tracking;
 		return;
 	}
-	MoveToLocation(Destination[index]);
+	MoveToLocation(Destination[DestIndex]);
 	
-	if (EqualActorXYNearby(MonsterPawn, Destination[index]))
+	if (EqualActorXYNearby(MonsterPawn, Destination[DestIndex]))
 	{
-		index = (index + 1) % Destination.Num();
+		UE_LOG(LogTemp, Log, TEXT("Patrol~: Num : %d"), DestIndex);
+		DestIndex = (DestIndex + 1) % Destination.Num();
 	}
 }
 
 void APDMonster1AIController::Tracking()
 {
+	UE_LOG(LogTemp, Log, TEXT("Tracking~"));
 	MoveToActor(PlayerPawn);
 	float Distance = FVector::Dist(MonsterPawn->GetActorLocation(), PlayerPawn->GetActorLocation());
 	if (Distance > MonsterPawn->Stat->SightRange || IsOutOfBound())
@@ -149,6 +153,7 @@ void APDMonster1AIController::Tracking()
 
 void APDMonster1AIController::Attack()
 {
+	UE_LOG(LogTemp, Log, TEXT("Attack~"));
 	if (!MonsterPawn->IsAttack)
 	{
 		MonsterActionState = ENormalMonsterActionState::Tracking;

@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "../PDDataSet.h"
+#include "../Manager/PDNormalMonsterManager.h"
 
 APDMonster1::APDMonster1()
 {
@@ -72,10 +73,21 @@ void APDMonster1::DeathStart()
 	}
 	MonsterBasicState = EMonsterBasicState::DEATH;
 	GetCapsuleComponent()->SetCollisionProfileName("NoCollision");
-	WeaponDrop();
+	
 	//Drop a Item
+	WeaponDrop();
+
 	//Monster Remove on MonsterManager
+	UPDNormalMonsterManager::Get()->RemoveMonster(MonsterCode);
+
 	//after 5seconds Actor destory
+	FTimerHandle DeathTimeHandle;
+	GetWorld()->GetTimerManager().SetTimer(DeathTimeHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			Destroy();
+			/*GetWorld()->GetTimerManager().ClearTimer()*/
+		}
+	), DeathDuration, false);
 
 }
 

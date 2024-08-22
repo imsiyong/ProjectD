@@ -22,12 +22,17 @@ private:
 
 	TMap<int32, bool> IsMonsterLived;
 
+	TMap<int32, class APDMonster1*> MonsterMap;
+	
+	TMap<int32, float> TimerMap;
+
 	int32 Key;
 public:
 	APDSpawnManager();
 
 	virtual void BeginDestroy() override;
 
+	void SpawnTick(float DeltaSeconds, UWorld* world);
 	void ResetData();
 	void Init();
 	void AddMap(FVector spawn, FVector patrol1, FVector patrol2, FVector patrol3, FVector patrol4);

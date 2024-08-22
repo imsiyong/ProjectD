@@ -6,8 +6,6 @@
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 
-
-
 void UPDUWBattleStatus::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();

@@ -2,17 +2,16 @@
 
 
 #include "PDPlayerController.h"
-#include "PDUWBattleStatus.h"
-#include "PDItemInventory.h"
+#include "UserWidget/PDUWBattleStatus.h"
+#include "UserWidget/PDItemInventory.h"
 #include "PDMonsterSample.h"
-#include "PDUWBattleEnd.h"
+#include "UserWidget/PDUWBattleEnd.h"
 #include "ProjectDCharacter.h"
-#include "PDUISlot.h"
-#include "PDUWEquip.h"
+#include "UserWidget/PDUISlot.h"
+#include "UserWidget/PDUWEquip.h"
 
 APDPlayerController::APDPlayerController()
 {
-	bShowMouseCursor = true;
 	ToggleCount = 0;
 	ConstructorHelpers::FClassFinder<UPDUWBattleStatus> BS(TEXT("WidgetBlueprint'/Game/UMG/BattleStatus.BattleStatus_C'"));
 	if (BS.Succeeded())

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PDEnum.h"
+#include "../PDEnum.h"
 #include "Blueprint/UserWidget.h"
 #include "PDUISlot.generated.h"
 

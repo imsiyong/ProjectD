@@ -4,14 +4,14 @@
 #include "PDUISlot.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
-#include "ProjectDCharacter.h"
-#include "PDPlayerController.h"
+#include "../ProjectDCharacter.h"
+#include "../PDPlayerController.h"
 #include "Kismet/GameplayStatics.h"
-#include "PDCharacterItemInventory.h"
+#include "../PDCharacterItemInventory.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "PDUWDrag.h"
 #include "Components/CanvasPanelSlot.h"
-#include "PDCharacterEquip.h"
+#include "../PDCharacterEquip.h"
 
 void UPDUISlot::Refresh()
 {

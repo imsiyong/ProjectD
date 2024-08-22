@@ -51,6 +51,7 @@ public:
 		void ToggleEquip();
 
 	int32 ToggleCount;
+	
 	UFUNCTION()
 		void ToggleMousePointer(bool isEnable);
 };

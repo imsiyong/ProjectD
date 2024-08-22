@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PDEnum.h"
+#include "../PDEnum.h"
 #include "Blueprint/DragDropOperation.h"
 #include "PDUWDrag.generated.h"
 

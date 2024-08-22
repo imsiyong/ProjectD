@@ -1,35 +1,40 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PDUWEquip.h"
-#include "Components/Image.h"
-#include "PDUISlot.h"
-#include "ProjectDCharacter.h"
-#include <Kismet/GameplayStatics.h>
+#include "PDItemInventory.h"
+#include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
+#include "Components/Button.h"
 #include "Blueprint/WidgetTree.h"
+#include <Kismet/GameplayStatics.h>
+#include "PDUISlot.h"
+#include "../ProjectDCharacter.h"
+#include "../PDCharacterItemInventory.h"
 
-void UPDUWEquip::Init()
+void UPDItemInventory::Init()
 {
 	Slots.Empty();
+
 	TArray<UWidget*> Widgets;
 	WidgetTree->GetAllWidgets(Widgets);
+
 	UPDUISlot* UISlot;
 	for (auto Widget : Widgets)
 	{
 		UISlot = Cast<UPDUISlot>(Widget);
 		if (!UISlot)continue;
-		UISlot->SlotType = ESlotType::Equip;
+		UISlot->SlotType = ESlotType::Inventory;
 		Slots.Emplace(UISlot);
 	}
 }
 
-void UPDUWEquip::NativeOnInitialized()
+void UPDItemInventory::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	Init();
 }
 
-void UPDUWEquip::Refresh()
+void UPDItemInventory::Refresh()
 {
 	if (Player == nullptr)
 	{
@@ -39,9 +44,8 @@ void UPDUWEquip::Refresh()
 			Player = Cast<AProjectDCharacter>(PlayerController->GetPawn());
 		}
 	}
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < Player->Inventory22->MaxCount; i++)
 	{
 		Slots[i]->Refresh();
 	}
-	Player->WeaponMountByEquipment();// ¹«±âÀåÂø
 }

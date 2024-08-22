@@ -28,4 +28,13 @@ public:
 	TArray<FStat*> GetMonsterStatArray() { return MonsterStatArray; }
 
 	class UDataTable* ItemData; 
+public:
+	FStat* PlayerStat;
+	FStat* GetPlayerStat();
+
+	class UPDCharacterItemInventory* Inventory;
+	UPDCharacterItemInventory* GetPlayerInventory();
+
+	class UPDCharacterEquip* Equip;
+	UPDCharacterEquip* GetPlayerEquip();
 };

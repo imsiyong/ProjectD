@@ -5,6 +5,8 @@
 #include "ItemData.h"
 #include "Manager/PDSpawnManager.h"
 #include "PDSpawnPoint.h"
+#include "PDCharacterItemInventory.h"
+#include "PDCharacterEquip.h"
 
 UPDGameInstance::UPDGameInstance()
 {
@@ -27,4 +29,25 @@ void UPDGameInstance::MonsterStatArrayAdd()
 {
 	class FStat* ref = new FStat(MonsterCode++);
 	MonsterStatArray.Add(ref);
+}
+
+FStat* UPDGameInstance::GetPlayerStat()
+{
+	if (PlayerStat == nullptr)
+		PlayerStat = new FStat(0);
+	return PlayerStat;
+}
+
+UPDCharacterItemInventory* UPDGameInstance::GetPlayerInventory()
+{
+	if (Inventory == nullptr)
+		Inventory = NewObject<UPDCharacterItemInventory>();
+	return Inventory;
+}
+
+UPDCharacterEquip* UPDGameInstance::GetPlayerEquip()
+{
+	if (Equip == nullptr)
+		Equip = NewObject<UPDCharacterEquip>();
+	return Equip;
 }

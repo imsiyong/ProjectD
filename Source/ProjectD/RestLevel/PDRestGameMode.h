@@ -13,5 +13,9 @@ UCLASS()
 class PROJECTD_API APDRestGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+public:
+	APDRestGameMode();
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void Tick(float DeltaSeconds) override;
 };

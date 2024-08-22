@@ -9,7 +9,7 @@
 #include "ProjectDCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "PDCharacterItemInventory.h"
-#include "PDItemInventory.h"
+#include "UserWidget/PDItemInventory.h"
 
 APDMace::APDMace()
 {

@@ -3,6 +3,7 @@
 
 #include "PDSpawnManager.h"
 #include "../PDSpawnPoint.h"
+#include "../Monster/PDMonster1.h"
 #include "PDNormalMonsterManager.h"
 
 APDSpawnManager* APDSpawnManager::InstanceMM = nullptr;
@@ -20,7 +21,24 @@ APDSpawnManager::APDSpawnManager()
 void APDSpawnManager::BeginDestroy()
 {
 	Super::BeginDestroy();
-	
+}
+
+void APDSpawnManager::SpawnTick(float DeltaSeconds, UWorld* world)
+{
+	for (auto& temp : MonsterMap)
+	{
+		temp.Value;
+		if (temp.Value->MonsterBasicState == EMonsterBasicState::DEATH)
+		{
+			TimerMap[temp.Key] += DeltaSeconds;
+			if (TimerMap[temp.Key] >= 10.0f)
+			{
+				TimerMap[temp.Key] = 0.0f;
+				FActorSpawnParameters spawnparam;
+				temp.Value= UPDNormalMonsterManager::Get()->FactoryMonsterSpawn(world, *SpawnMap.Find(temp.Key), FRotator(0.f, 0.f, 0.f), *PatrolMap.Find(temp.Key), spawnparam);
+			}
+		}
+	}
 }
 
 void APDSpawnManager::ResetData()
@@ -29,6 +47,8 @@ void APDSpawnManager::ResetData()
 	SpawnMap.Empty();
 	IsMonsterLived.Empty();
 	PatrolMap.Empty();
+	MonsterMap.Empty();
+	TimerMap.Empty();
 }
 
 void APDSpawnManager::Init()
@@ -52,6 +72,8 @@ void APDSpawnManager::AddMap(FVector spawn, FVector patrol1, FVector patrol2, FV
 		ref.Emplace(patrol4);
 	PatrolMap.Add(Key, ref);
 	IsMonsterLived.Add(Key, false);
+	MonsterMap.Add(Key, nullptr);
+	TimerMap.Add(Key, 0.0f);
 	Key++;
 }
 
@@ -62,7 +84,8 @@ void APDSpawnManager::NormalMonsterSpawn(UWorld* world)
 	{
 		if (!*IsMonsterLived.Find(i))
 		{
-			UPDNormalMonsterManager::Get()->FactoryMonsterSpawn(world, *SpawnMap.Find(i), FRotator(0.f, 0.f, 0.f), *PatrolMap.Find(i), spawnparam);
+			APDMonster1* temp = UPDNormalMonsterManager::Get()->FactoryMonsterSpawn(world, *SpawnMap.Find(i), FRotator(0.f, 0.f, 0.f), *PatrolMap.Find(i), spawnparam);
+			MonsterMap[i] = temp;
 		}
 	}
 }

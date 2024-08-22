@@ -4,14 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "PDSafePlayerController.generated.h"
+#include "PDRestPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTD_API APDSafePlayerController : public APlayerController
+class PROJECTD_API APDRestPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+public:
+	APDRestPlayerController();
 };

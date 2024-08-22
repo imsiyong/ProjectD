@@ -46,7 +46,7 @@ APDMonster1* UPDNormalMonsterManager::FactoryMonsterSpawn(UWorld* World, FVector
 		if (TempMonsterAI)
 		{
 			TempMonsterAI->Init();
-			TempMonsterAI->SetPoint(FVector(-400.f, 1100.f, 250.f), patrol);
+			TempMonsterAI->SetPoint(SpawnLocation, patrol);
 		}
 		if (!MonsterMap.Contains(Key))
 		{
